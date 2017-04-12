@@ -77,8 +77,9 @@ describe('Redux integration', () => {
 
         const selector = createSelector(
             orm,
-            state => state.orm,
-            state => state.selectedUser,
+            (state, props) => state.orm,
+            (state, props) => props.foo,
+            (state, props) => props.bar,
             _selectorFunc
         );
 
@@ -86,18 +87,19 @@ describe('Redux integration', () => {
 
         const appState = {
             orm: _state,
-            selectedUser: 5,
+            selectedUser: 5
         };
 
         expect(selector).to.be.a('function');
 
-        selector(appState);
+        selector(appState, { foo: 7, bar: 8 });
         expect(_selectorFunc.callCount).to.equal(1);
 
         expect(_selectorFunc.lastCall.args[0]).to.be.an.instanceOf(Session);
         expect(_selectorFunc.lastCall.args[0].state).to.equal(_state);
 
-        expect(_selectorFunc.lastCall.args[1]).to.equal(5);
+        expect(_selectorFunc.lastCall.args[1]).to.equal(7);
+        expect(_selectorFunc.lastCall.args[2]).to.equal(8);
 
         selector(appState);
         expect(_selectorFunc.callCount).to.equal(1);
